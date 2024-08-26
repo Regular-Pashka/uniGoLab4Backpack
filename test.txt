@@ -1,0 +1,15 @@
+Product: Phone
+Cost: 1
+Weight: 3
+Product: Keys
+Cost: 6
+Weight: 4
+Product: Diamons
+Cost: 4
+Weight: 5
+Product: SomeStuff
+Cost: 7
+Weight: 8
+Product: Stuff
+Cost: 6
+Weight: 9
