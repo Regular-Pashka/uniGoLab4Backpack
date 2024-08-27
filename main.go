@@ -16,36 +16,17 @@ import (
 	"strconv"
 )
 
-/* 
-	TODO: 
-
-	максимальный вес, текущий вес, список предметов в рюкзаке.
-	Реализовать меню:
-	1 Заполнение списка предметов из файла
-	2 Добавление предмета
-	3 Изменение предмета
-	4 Удаление предмета
-	5 Задание максимального веса рюкзака
-	6 Просмотр содержимого рюкзака
-	7 Выбор способа решения задачи
-	8 Сравнение способов решения
-*/
-
-/* 
-	Нужно будет реализовать функции добавления и удаления из списка products в main,
-	считывания из файла
-*/
-
 type Product struct{
 	Name string
 	Weight int
-	Value float64
+	Value int
 }
 
 type Backpack struct {
-	maxWeight int
-	currWeight int
-	productList []Product
+	MaxWeight int
+	CurrentWeight int
+	CurrentValue int
+	Products []*Product
 }
 
 func addProductsFromFile(filePath string) []*Product {
@@ -86,28 +67,27 @@ func getWeightFromStr(line string) int {
 	weight := line[startIndex + 2 : ]
 	weightInt, err := strconv.Atoi(weight)
 	if err != nil {
-        // Handle error
         fmt.Println(err)
         return 1
     }
 	return weightInt
 }
 
-func getValueFromStr(line string) float64 {
+func getValueFromStr(line string) int {
 	startIndex := strings.Index(line, ":")
 	value := line[startIndex + 2 : ]
-	valueFloat, err := strconv.ParseFloat(value, 64)
+	valueInt, err := strconv.Atoi(value)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return 1
 	}
-	return valueFloat
+	return valueInt
 }
 
 func printMenu() {
     fmt.Println("Меню")
     fmt.Println("1. Заполнение списка из файла")
-    fmt.Println("2. Вывести список предметов в очереди")
+	fmt.Println("2. Вывести список предметов")
     fmt.Println("3. Добавить предмет")
     fmt.Println("4. Изменить предмет")
     fmt.Println("5. Удалить предмет")
@@ -123,7 +103,7 @@ func getPath() string {
 	return strings.TrimSpace(path)
 }
 
-func createProduct(name string, weight int, value float64) *Product {
+func createProduct(name string, weight int, value int) *Product {
 	return &Product{
 		Name: name,
 		Weight: weight,
@@ -134,70 +114,119 @@ func createProduct(name string, weight int, value float64) *Product {
 func initializeProduct() *Product{
 	var name string
 	var weight int
-	var value float64
+	var value int
 	fmt.Print("Введите название предмета: ")
 	fmt.Scanf("%s", &name)
-	// fmt.Println()
 	fmt.Print("Введите вес предмета: ")
 	fmt.Scanf("%d", &weight)
-	// fmt.Println()
 	fmt.Print("Введите цену предмета: ")
-	fmt.Scanf("%f", &value)
-	// fmt.Println()
+	fmt.Scanf("%d", &value)
 	return createProduct(name, weight, value)
 }
 
-func setProductName(*Product) {
-	fmt.Printf()
+func setProductName(p *Product) {
+	var name string
+	fmt.Print("Введите новое название предмета: ")
+	fmt.Scanf("%s", &name)
+	p.Name = name
 }
 
-func setProductName(*Product) {
-
+func setProductWeight(p *Product) {
+	var weight int
+	fmt.Print("Введите новый вес предмета: ")
+	fmt.Scanf("%d", &weight)
+	p.Weight = weight
 }
 
-func setProductName(*Product) {
-
+func setProductValue(p *Product) {
+	var value int
+	fmt.Print("Введите новую цену предмета: ")
+	fmt.Scanf("%d", &value)
+	p.Value = value
 }
 
 func changeProduct(products []*Product) {
 	var ind int
-	ans := 4
+	var ans int
 	fmt.Print("Введите индекс предмета в списке: ")
-	fmt.Scanf("%s", &ind)
-	for ind >= len(products) {
+	fmt.Scanf("%d", &ind)
+	// fmt.Print("%d", len(products))
+	for ind >= len(products) || ind < 0 {
 		fmt.Print("Нет такого предмета. Введите индекс предмета в списке: ")
-		fmt.Scanf("%s", &ind)
+		fmt.Scanf("%d", &ind)
 	}
-	for ans <= 0 && ans > 3 {
+	for {
 		fmt.Println("Меню изменения предмета:")
 		fmt.Println("1. Изменить название")
 		fmt.Println("2. Изменить вес")
 		fmt.Println("3. Изменить цену")
-		fmt.Print("Введите что вы хотите изменить: ")
+		fmt.Println("4. Вернуться в меню")
+		fmt.Print("> ")
 		fmt.Scanf("%d", &ans)
 		switch ans{
 		case 1:
-			setProductName()
+			setProductName(products[ind])
 		case 2:
-			setProductWeight()
+			setProductWeight(products[ind])
 		case 3:
-			setProductValue()
-
+			setProductValue(products[ind])
+		case 4:
+			return
 		default:
-			
+			fmt.Println("Нет такой опции!")
 		}
 	}
-	
+}
+
+func (b *Backpack) SetMaxWeight() {
+	var weight int
+	fmt.Print("Введите максимальный вес рюкзака: ")
+	fmt.Scanf("%d", &weight)
+	// fmt.Print("%d", len(products))
+	for weight <= 0 {
+		fmt.Print("Нет такого предмета. Введите индекс предмета в списке: ")
+		fmt.Scanf("%d", &weight)
+	}
+	b.MaxWeight = weight
+}
+
+func showList(list []*Product) {
+	for _, val := range list {
+		fmt.Print(val)
+	}
+	fmt.Println()
+}
+
+func deleteProduct(list *[]*Product) {
+	var ind int
+	fmt.Print("Введите индекс предмета в списке для удаления: ")
+	fmt.Scanf("%d", &ind)
+	for ind >= len(*list) || ind < 0 {
+		fmt.Print("Нет такого предмета. Введите индекс предмета в списке: ")
+		fmt.Scanf("%d", &ind)
+	}
+	// list = append(list[:ind], list[ind+1:]...)
+	copy((*list)[ind:], (*list)[ind + 1:])
+	(*list)[len(*list) - 1] = nil
+	*list = (*list)[:len(*list) - 1]
+	fmt.Println("Предмет удален!")
+}
+
+
+
+func (b *Backpack) Add(product *Product) {
+    if b.CurrentWeight + product.Weight <= b.MaxWeight {
+        b.Products = append(b.Products, product)
+        b.CurrentWeight += product.Weight
+        b.CurrentValue += product.Value
+    }
 }
 
 func main() {
-	// Initialize an empty list of products
 	products := make([]*Product, 0)
 
 	// Initialize a backpack as nil
-	// var backpack *Backpack
-	
-	// Initialize ans to 0
+	var backpack *Backpack
 	ans := 0
 	for {
 		printMenu()
@@ -207,61 +236,45 @@ func main() {
 		case 1:
 			path := getPath()
 			products = addProductsFromFile(path)
-			// fmt.Println("Предметы добавлены", products)
 		case 2:
-			products = append(products, initializeProduct())
-			// fmt.Println("Предметы добавлены", products)
+			showList(products)
 		case 3:
-			
-		// case 3:
-		// 	fmt.Print("Введите стоимость: ")
-		// 	var cost int
-		// 	fmt.Scanln(&cost)
-		// 	fmt.Print("Введите вес: ")
-		// 	var Weight int
-		// 	fmt.Scanln(&Weight)
-		// 	products = append(products, Product{cost, Weight})
-		// 	fmt.Println("Предмет добавлен")
-		// case 4:
-		// 	fmt.Print("Введите индекс предмета для изменения от 1 до ", len(products), ": ")
-		// 	// changeProduct(&products[in.nextInt()-1])
-		// case 5:
-		// 	fmt.Print("Введите номер в списке от 1 до ", len(products), ": ")
-		// 	// products = append(products[:in.nextInt()-1], products[in.nextInt():]...)
-		// case 6:
-		// 	fmt.Print("Введите максимальный вес рюкзака: ")
-		// 	var maxWeight int
-		// 	fmt.Scanln(&maxWeight)
-		// 	backpack = &Backpack{maxWeight: maxWeight}
-		// case 7:
-		// 	if backpack == nil {
-		// 		fmt.Println("Рюкзак не инициализирован!")
-		// 		break
-		// 	}
-		// 	if len(products) == 0 {
-		// 		fmt.Println("Список предметов не инициализирован!")
-		// 		break
-		// 	}
-		// 	solver := KnapsackSolver{products: products, backpack: backpack}
-		// 	fmt.Println("1. Решение методом динамического программирования")
-		// 	fmt.Println("2. Решение жадным алгоритмом (макс. вес)")
-		// 	fmt.Println("3. Решение рекурсией")
-		// 	fmt.Print("> ")
-		// 	var localAns int
-		// 	fmt.Scanln(&localAns)
-		// 	switch localAns {
-		// 	case 1:
-		// 		backpack.clearContents()
-		// 		backpack = solver.findAnsDP(len(products), backpack.maxWeight)
-		// 	case 2:
-		// 		backpack.clearContents()
-		// 		backpack = solver.findAnsGreedy(len(products), backpack.maxWeight)
-		// 	case 3:
-		// 		backpack.clearContents()
-		// 		backpack = solver.findAnsRec(len(products), backpack.maxWeight)
-		// 	default:
-		// 		fmt.Println("Неверная команда!")
-		// 	}
+			products = append(products, initializeProduct())
+		case 4:
+			changeProduct(products)
+		case 5:
+			deleteProduct(&products)
+		case 6:
+			backpack.SetMaxWeight()
+		case 7:
+			if backpack == nil {
+				fmt.Println("Рюкзак не инициализирован!")
+				break
+			}
+			if len(products) == 0 {
+				fmt.Println("Список предметов не инициализирован!")
+				break
+			}
+			solver := KnapsackSolver{products: products, backpack: backpack}
+			fmt.Println("1. Решение методом динамического программирования")
+			fmt.Println("2. Решение жадным алгоритмом (макс. вес)")
+			fmt.Println("3. Решение рекурсией")
+			fmt.Print("> ")
+			var localAns int
+			fmt.Scanln(&localAns)
+			switch localAns {
+			case 1:
+				backpack.clearContents()
+				backpack = solver.findAnsDP(len(products), backpack.maxWeight)
+			case 2:
+				backpack.clearContents()
+				backpack = solver.findAnsGreedy(len(products), backpack.maxWeight)
+			case 3:
+				backpack.clearContents()
+				backpack = solver.findAnsRec(len(products), backpack.maxWeight)
+			default:
+				fmt.Println("Неверная команда!")
+			}
 		case 8:
 			fmt.Println("Выход из программы")
 			return
@@ -309,4 +322,10 @@ func main() {
 размер каждого предмета. В результате работы помимо максимального веса
 учитывается геометрическое наполнение рюкзака. 
 
+*/
+
+
+
+/* 
+	осталось реализовать выбор способа решения задачи
 */
