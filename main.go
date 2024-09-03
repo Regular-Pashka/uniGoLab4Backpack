@@ -185,12 +185,12 @@ func (b *Backpack) SetMaxWeight() {
 	fmt.Print("Введите максимальный вес рюкзака: ")
 	fmt.Scanf("%d", &weight)
 	// fmt.Print("%d", len(products))
-	fmt.Println("USPEH")
+	// fmt.Println("USPEH")
 	for weight <= 0 {
 		fmt.Print("Максимальная грузоподъемность рюкзака не может быть отрицательной!: ")
 		fmt.Scanf("%d", &weight)
 	}
-	fmt.Println("USPEH2")
+	// fmt.Println("USPEH2")
 	b.MaxWeight = weight
 }
 
@@ -367,30 +367,30 @@ func main() {
 			switch localAns {
 			case 1:
 				backpack.Clear()
-				start := time.Start()
+				start := time.Now()
 				backpack.CurrentValue, backpack.Products, backpack.CurrentWeight = solveDynamic(products, backpack.MaxWeight)
-				duration := time.Since()
+				duration := time.Since(start)
 				backpack.Output()
-				fmt.Printf("Время выполнения: %d наносекунд", duration)
+				fmt.Printf("Время выполнения: %d наносекунд\n", duration)
 			case 2:
 				backpack.Clear()
-				start := time.Start()
+				start := time.Now()
 				backpack.solveGreedy(products)
-				duration := time.Since()
+				duration := time.Since(start)
 				backpack.Output()
-				fmt.Printf("Время выполнения: %d наносекунд", duration)
+				fmt.Printf("Время выполнения: %d наносекунд\n", duration)
 			case 3:
 				backpack.Clear()
-				start := time.Start()
+				start := time.Now()
 				_, selectedProducts := solveRecursive(products, len(products) - 1, backpack.MaxWeight, []*Product{})
-				duration := time.Since()
+				duration := time.Since(start)
 				for _, product := range selectedProducts {
 					backpack.Products = append(backpack.Products, product)
 					backpack.CurrentWeight += product.Weight
 					backpack.CurrentValue += product.Value
 				}
 				backpack.Output()
-				fmt.Printf("Время выполнения: %d наносекунд", duration)
+				fmt.Printf("Время выполнения: %d наносекунд\n", duration)
 			default:
 				fmt.Println("Неверная команда!")
 			}
