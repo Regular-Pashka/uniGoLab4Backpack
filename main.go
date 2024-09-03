@@ -7,6 +7,7 @@ import (
 	"strings"
 	"strconv"
 	"sort"
+	"time"
 )
 
 type Product struct{
@@ -366,21 +367,30 @@ func main() {
 			switch localAns {
 			case 1:
 				backpack.Clear()
+				start := time.Start()
 				backpack.CurrentValue, backpack.Products, backpack.CurrentWeight = solveDynamic(products, backpack.MaxWeight)
+				duration := time.Since()
 				backpack.Output()
+				fmt.Printf("Время выполнения: %d наносекунд", duration)
 			case 2:
 				backpack.Clear()
+				start := time.Start()
 				backpack.solveGreedy(products)
+				duration := time.Since()
 				backpack.Output()
+				fmt.Printf("Время выполнения: %d наносекунд", duration)
 			case 3:
 				backpack.Clear()
+				start := time.Start()
 				_, selectedProducts := solveRecursive(products, len(products) - 1, backpack.MaxWeight, []*Product{})
+				duration := time.Since()
 				for _, product := range selectedProducts {
 					backpack.Products = append(backpack.Products, product)
 					backpack.CurrentWeight += product.Weight
 					backpack.CurrentValue += product.Value
 				}
 				backpack.Output()
+				fmt.Printf("Время выполнения: %d наносекунд", duration)
 			default:
 				fmt.Println("Неверная команда!")
 			}
